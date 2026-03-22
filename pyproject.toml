@@ -5,13 +5,20 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "mdeq"
 authors = [
-    { name = "Katherine Caley", email = "katherine.caley@anu.edu.au"},
-    { name = "Gavin Huttley", email = "Gavin.Huttley@anu.edu.au"},
+    { name = "Katherine Caley", email = "katherine.caley@anu.edu.au" },
+    { name = "Gavin Huttley", email = "Gavin.Huttley@anu.edu.au" },
 ]
-keywords = ["biology", "genomics", "statistics", "phylogeny", "evolution", "bioinformatics"]
+keywords = [
+    "biology",
+    "genomics",
+    "statistics",
+    "phylogeny",
+    "evolution",
+    "bioinformatics",
+]
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.11,<=3.14"
 dependencies = [
     "cogent3>=2025.7.10a5",
     "click",
@@ -19,20 +26,20 @@ dependencies = [
     "scipy",
     "scitrack",
     "rich",
-    "trogon"
+    "trogon",
 ]
 classifiers = [
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: BSD License",
-        "Topic :: Scientific/Engineering :: Bio-Informatics",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: 3.13",
-    ]
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 dynamic = ["version", "description"]
 
 [tool.flit.sdist]
@@ -42,18 +49,8 @@ include = ["src/*", "pyproject.toml"]
 mdeq = "mdeq:main"
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-xdist",
-    "nox",
-]
-dev = [
-    "cogapp",
-    "docformatter",
-    "mdeq[test]",
-    "ruff==0.15.6",
-]
+test = ["pytest", "pytest-cov", "pytest-xdist", "nox"]
+dev = ["cogapp", "docformatter", "mdeq[test]", "ruff==0.15.6"]
 
 [tool.pytest.ini_options]
 addopts = ["--strict-config", "-ra"]
