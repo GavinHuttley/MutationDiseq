@@ -1,5 +1,3 @@
-from typing import ForwardRef
-
 from cogent3 import get_model, make_tree
 from cogent3.app import evo
 from cogent3.app import result as c3_result
@@ -10,6 +8,7 @@ from cogent3.app.typing import (
     SerialisableType,
 )
 
+from mdeq.adjacent import grouped
 from mdeq.model import RATE_PARAM_UPPER
 from mdeq.utils import get_foreground
 
@@ -53,7 +52,7 @@ class adjacent_eop:
 
     def main(
         self,
-        data: ForwardRef("grouped"),
+        data: grouped,
         *args,
         **kwargs,
     ) -> HypothesisResultType | SerialisableType:

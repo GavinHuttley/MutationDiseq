@@ -1,6 +1,6 @@
 import pathlib
 from random import Random
-from typing import ForwardRef, Union
+from typing import Union
 
 from cogent3.app.composable import define_app
 from cogent3.app.result import bootstrap_result, model_result
@@ -9,7 +9,7 @@ from cogent3.core.alignment import Alignment
 from cogent3.util.deserialise import deserialise_object
 
 from mdeq.adjacent import grouped
-from mdeq.bootstrap import _reconstitute_collection
+from mdeq.bootstrap import _reconstitute_collection, compact_bootstrap_result
 from mdeq.utils import CompressedValue
 
 
@@ -97,7 +97,7 @@ class control_generator:
 
     def main(
         self,
-        result: HypothesisResultType | ForwardRef("compact_bootstrap_result"),
+        result: HypothesisResultType | compact_bootstrap_result,
     ) -> T:
         # this function will only be called on the first result object,
         # it establishes the appropriate method to set for the data

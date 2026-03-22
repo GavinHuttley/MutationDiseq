@@ -2,7 +2,6 @@ import json
 from dataclasses import dataclass
 from functools import singledispatch
 from types import NoneType
-from typing import ForwardRef
 
 from cogent3 import make_table
 from cogent3.app.composable import NotCompleted, define_app
@@ -17,6 +16,7 @@ from numpy.linalg import norm
 from scipy.linalg import expm
 from scipy.optimize import minimize_scalar
 
+from mdeq.bootstrap import compact_bootstrap_result
 from mdeq.numeric import dot, sum
 from mdeq.toe import ALT_TOE
 from mdeq.utils import SerialisableMixin, load_from_sqldb
@@ -241,7 +241,7 @@ def get_nabla_c(
 
 @define_app
 def bootstrap_to_nabla(
-    result: ForwardRef("compact_bootstrap_result"),
+    result: compact_bootstrap_result,
     fg_edge=None,
     wrt_nstat=False,
 ) -> nabla_c | SerialisableType:
