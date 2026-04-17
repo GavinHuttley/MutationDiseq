@@ -1,10 +1,11 @@
 from functools import lru_cache
 
 from cogent3.app import evo
-from cogent3.app.composable import NotCompleted, define_app, get_unique_id
 from cogent3.app.result import generic_result
 from cogent3.app.typing import AlignedSeqsType, SerialisableType
-from cogent3.util.misc import extend_docstring_from
+from scinexus.composable import NotCompleted, define_app
+from scinexus.data_store import get_unique_id
+from scinexus.misc import extend_docstring_from
 
 from mdeq.model import RATE_PARAM_UPPER
 from mdeq.utils import get_foreground

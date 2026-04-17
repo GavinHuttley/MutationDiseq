@@ -82,7 +82,6 @@ def test_get_no_init_hypothesis_app_run(
 ):
     out_dstore = open_data_store(tmp_path / "tempdir.sqlitedb", mode="w")
     writer = write_to_sqldb(out_dstore)
-    reader.disconnect()
     process = reader + init_hyp_app(just_continuous=False, opt_args=opt_args) + writer
     process.apply_to(dstore_instance[:1])
     assert len(out_dstore.summary_not_completed) == 0

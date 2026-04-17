@@ -4,13 +4,13 @@ from functools import singledispatch
 from types import NoneType
 
 from cogent3 import make_table
-from cogent3.app.composable import NotCompleted, define_app
 from cogent3.app.data_store import DataStoreABC
 from cogent3.app.typing import SerialisableType
 from cogent3.maths.matrix_exponential_integration import expected_number_subs
 from cogent3.recalculation.scope import InvalidScopeError
-from cogent3.util import deserialise
-from cogent3.util.misc import get_object_provenance
+from scinexus.composable import NotCompleted, define_app
+from scinexus.deserialise import register_deserialiser
+from scinexus.misc import get_object_provenance
 from numpy import allclose, diag_indices, mean, ndarray, std
 from numpy.linalg import norm
 from scipy.linalg import expm
@@ -112,7 +112,7 @@ class nabla_c(SerialisableMixin):
         return json.dumps(self.to_rich_dict())
 
 
-@deserialise.register_deserialiser(
+@register_deserialiser(
     get_object_provenance(nabla_c),
     "mdeq.convergence.delta_nabla",
 )

@@ -1,12 +1,13 @@
 from cogent3 import get_model, make_tree
 from cogent3.app import evo
 from cogent3.app import result as c3_result
-from cogent3.app.composable import NotCompleted, define_app, get_unique_id
 from cogent3.app.typing import (
     AlignedSeqsType,
     HypothesisResultType,
     SerialisableType,
 )
+from scinexus.composable import NotCompleted, define_app
+from scinexus.data_store import get_unique_id
 
 from mdeq.adjacent import grouped
 from mdeq.model import RATE_PARAM_UPPER

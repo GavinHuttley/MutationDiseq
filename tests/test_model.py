@@ -30,7 +30,7 @@ def test_make_gsn_app():
 
 
 def test_mles_at_bounds():
-    from cogent3.app import composable
+    from scinexus import composable
 
     path = DATADIR / "toe-300bp.sqlitedb"
     dstore = open_data_store(path, limit=1)
