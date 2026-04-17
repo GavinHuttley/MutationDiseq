@@ -14,8 +14,8 @@ from warnings import filterwarnings
 import click
 import trogon
 from cogent3 import get_app, make_table, open_data_store
+import scinexus
 from rich.console import Console
-from rich.progress import Progress, track
 from scitrack import CachingLogger
 
 import mdeq._click_options as _cli_opt
@@ -199,7 +199,8 @@ def make_adjacent(inpath, gene_order, outpath, limit, overwrite, verbose, testru
     paired = physically_adjacent(gene_order, sample_ids)
     # make the grouped data app
     group_loader = load_data_group(inpath)
-    for pair in track(paired, refresh_per_second=5):
+    pbar = scinexus.get_progress(show_progress=True)
+    for pair in pbar(paired, msg="Making adjacent"):
         record = group_loader(pair)
         writer(record)
 
@@ -599,50 +600,40 @@ def extract_pvalues(indir, pattern, recursive, outdir, limit, overwrite, verbose
         )
         sys.exit(1)
 
-    with Progress(transient=True) as progress:
-        all_paths = progress.add_task("[green]Dbs...", total=len(paths))
-        for i, path in enumerate(paths):
-            progress.update(all_paths, completed=i + 1)
-            if outdir:
-                outpath = outdir / f"{path.stem}.tsv"
-            else:
-                outpath = path.parent / f"{path.stem}.tsv"
+    pbar = scinexus.get_progress(show_progress=True)
+    child = pbar.child()
+    for path in pbar(paths, msg="Dbs"):
+        if outdir:
+            outpath = outdir / f"{path.stem}.tsv"
+        else:
+            outpath = path.parent / f"{path.stem}.tsv"
 
-            if outpath.exists() and overwrite:
-                outpath.unlink()
-            elif outpath.exists() and not overwrite:
-                if verbose:
-                    console.print(f"[green]{outpath} exists, skipping")
+        if outpath.exists() and overwrite:
+            outpath.unlink()
+        elif outpath.exists() and not overwrite:
+            if verbose:
+                console.print(f"[green]{outpath} exists, skipping")
+            continue
+
+        dstore = open_data_store(path, limit=limit)
+        if not matches_type(dstore, data_type):
+            if verbose:
+                console.print(
+                    "[yellow]SKIPPED: "
+                    f"record type {dstore.record_type!r} in '{path}' does not match "
+                    f"expected {data_type!r}",
+                )
+            continue
+
+        data = defaultdict(list)
+        for m in child(dstore.completed, msg="records"):
+            r = reader(m)
+            if r.observed.pvalue is None:
                 continue
 
-            dstore = open_data_store(path, limit=limit)
-            if not matches_type(dstore, data_type):
-                if verbose:
-                    console.print(
-                        "[yellow]SKIPPED: "
-                        f"record type {dstore.record_type!r} in '{path}' does not match "
-                        f"expected {data_type!r}",
-                    )
-                continue
-
-            records = progress.add_task(
-                "[blue]records...",
-                total=len(dstore.completed),
-                transient=True,
-            )
-
-            data = defaultdict(list)
-            for j, m in enumerate(dstore.completed):
-                progress.update(records, completed=j + 1)
-                r = reader(m)
-                if r.observed.pvalue is None:
-                    continue
-
-                data["name"].append(m.unique_id)
-                data["chisq_pval"].append(r.observed.pvalue)
-                data["bootstrap_pval"].append(r.pvalue)
-
-            progress.remove_task(records)
+            data["name"].append(m.unique_id)
+            data["chisq_pval"].append(r.observed.pvalue)
+            data["bootstrap_pval"].append(r.pvalue)
 
             table = make_table(data=data)
             table.write(outpath)
@@ -730,36 +721,25 @@ def slide(
         outpath.unlink(missing_ok=True)
     out_dstore = open_data_store(outpath, mode="w" if overwrite else "r")
     writer = write_to_sqldb(out_dstore)
-    with Progress() as progress:
-        alignments = progress.add_task(
-            "[green]Alignment...",
-            total=len(dstore.completed),
-        )
-        for i, member in enumerate(dstore.completed):
-            progress.update(alignments, completed=i + 1)
-            n = omit_suffixes_from_path(Path(member.unique_id))
-            aln = loader(member)
-            num_windows = len(aln) - window_size + 1
-            windows = progress.add_task(
-                "[blue]slide...",
-                total=num_windows,
-                transient=True,
-            )
-            for start in range(0, num_windows, step):
-                progress.update(windows, completed=start + 1)
-                sliced = aln[start : start + window_size]
-                sub = sliced.no_degenerates()
-                if sub is None or len(sub) < min_length:
-                    continue
+    pbar = scinexus.get_progress(show_progress=True)
+    child = pbar.child()
+    for member in pbar(dstore.completed, msg="Alignment"):
+        n = omit_suffixes_from_path(Path(member.unique_id))
+        aln = loader(member)
+        num_windows = len(aln) - window_size + 1
+        for start in child(range(0, num_windows, step), msg="slide"):
+            sliced = aln[start : start + window_size]
+            sub = sliced.no_degenerates()
+            if sub is None or len(sub) < min_length:
+                continue
 
-                sub.source = f"{n}-{start}"
-                sub.info.index = start
-                if "fg_edge" in aln.info:
-                    sub.info.fg_edge = aln.info["fg_edge"]
+            sub.source = f"{n}-{start}"
+            sub.info.index = start
+            if "fg_edge" in aln.info:
+                sub.info.fg_edge = aln.info["fg_edge"]
 
-                # write it
-                writer(sub)
-            progress.remove_task(windows)
+            # write it
+            writer(sub)
 
     log_file_path = Path(LOGGER.log_file_path)
     LOGGER.shutdown()
