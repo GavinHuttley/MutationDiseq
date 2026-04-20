@@ -148,3 +148,6 @@ dmypy.json
 
 .DS_Store
 .mypy_cache/*
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
