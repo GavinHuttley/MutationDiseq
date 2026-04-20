@@ -47,7 +47,7 @@ from mdeq.utils import (
     write_to_sqldb,
 )
 
-__version__ = "2026.3.23"
+__version__ = "2026.4.21"
 
 filterwarnings("ignore", "Not using MPI")
 filterwarnings("ignore", "Unexpected warning from scipy")
