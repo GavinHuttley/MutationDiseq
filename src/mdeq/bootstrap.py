@@ -1,6 +1,7 @@
 import json
 from copy import deepcopy
 
+import scinexus
 from cogent3.app import evo
 from cogent3.app import io as io_app
 from cogent3.app.result import bootstrap_result
@@ -9,7 +10,6 @@ from cogent3.util import union_dict
 from scinexus.composable import NotCompleted, define_app
 from scinexus.data_store import get_unique_id
 from scinexus.deserialise import register_deserialiser
-import scinexus
 
 from mdeq.model import GN_sm, GS_sm
 from mdeq.toe import ALT_TOE, NULL_TOE, test_of_existence

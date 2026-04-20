@@ -2,10 +2,10 @@ from cogent3 import get_moltype
 from cogent3.app import evo
 from cogent3.app.result import model_result
 from cogent3.app.typing import SerialisableType
-from scinexus.composable import NotCompleted, define_app
 from cogent3.evolve.models import register_model
 from cogent3.evolve.ns_substitution_model import GeneralStationary
 from numpy import finfo
+from scinexus.composable import NotCompleted, define_app
 
 RATE_PARAM_UPPER = 100
 

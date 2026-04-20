@@ -12,9 +12,9 @@ from pathlib import Path
 from warnings import filterwarnings
 
 import click
+import scinexus
 import trogon
 from cogent3 import get_app, make_table, open_data_store
-import scinexus
 from rich.console import Console
 from scitrack import CachingLogger
 
