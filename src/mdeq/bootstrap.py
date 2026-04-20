@@ -3,11 +3,13 @@ from copy import deepcopy
 
 from cogent3.app import evo
 from cogent3.app import io as io_app
-from cogent3.app.composable import NotCompleted, define_app, get_unique_id
 from cogent3.app.result import bootstrap_result
 from cogent3.app.typing import AlignedSeqsType, SerialisableType
-from cogent3.util import deserialise, union_dict
-from rich.progress import track
+from cogent3.util import union_dict
+from scinexus.composable import NotCompleted, define_app
+from scinexus.data_store import get_unique_id
+from scinexus.deserialise import register_deserialiser
+import scinexus
 
 from mdeq.model import GN_sm, GS_sm
 from mdeq.toe import ALT_TOE, NULL_TOE, test_of_existence
@@ -27,7 +29,7 @@ def _reconstitute_collection(data):
     return data
 
 
-@deserialise.register_deserialiser("compact_bootstrap_result")
+@register_deserialiser("compact_bootstrap_result")
 def deserialise_compact(data):
     """returns a compact_bootstrap_result."""
     result_obj = compact_bootstrap_result(**data["result_construction"])
@@ -51,7 +53,7 @@ def deserialise_single_hyp(data: dict):
     -------
     model_collection_result
     """
-    from cogent3.util.deserialise import deserialise_object
+    from scinexus.deserialise import deserialise_object
 
     from mdeq.utils import CompressedValue
 
@@ -160,7 +162,7 @@ class compact_bootstrap_result(bootstrap_result):
 
     def deserialised_values(self):
         """inflate all values"""
-        from cogent3.util.deserialise import deserialise_object
+        from scinexus.deserialise import deserialise_object
 
         from mdeq.utils import CompressedValue
 
@@ -202,8 +204,8 @@ class bootstrap:
         self._inpath = get_unique_id(aln)
 
         series = range(self._num_reps)
-        if self._verbose:
-            series = track(series)
+        pbar = scinexus.get_progress(show_progress=self._verbose)
+        series = pbar(series, msg="Bootstrap")
 
         for i in series:
             sim_aln = self._null.simulate_alignment()

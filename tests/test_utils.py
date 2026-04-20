@@ -58,7 +58,7 @@ def test_configure_par():
 
 
 def test_set_fg_edge():
-    from cogent3.app.composable import NotCompleted
+    from scinexus.composable import NotCompleted
 
     data = dict(a="ACCGG", b="ACCGG", c="ACCGG")
     aln = make_aligned_seqs(data, source="blah", moltype="dna")

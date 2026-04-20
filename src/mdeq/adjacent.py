@@ -5,11 +5,11 @@ from pathlib import Path
 from typing import TypeVar
 
 from cogent3 import open_data_store
-from cogent3.app.composable import define_app
 from cogent3.app.typing import SerialisableType
 from cogent3.core.table import Table
-from cogent3.util import deserialise
-from cogent3.util.misc import get_object_provenance
+from scinexus.composable import define_app
+from scinexus.deserialise import register_deserialiser
+from scinexus.misc import get_object_provenance
 
 from mdeq.utils import SerialisableMixin, load_from_sqldb
 
@@ -55,14 +55,16 @@ class grouped(SerialisableMixin):
 
     @classmethod
     def from_dict(cls, data):
+        from scinexus.deserialise import deserialise_object
+
         data.pop("type", None)
-        elements = [deserialise.deserialise_object(e) for e in data.pop("_elements")]
+        elements = [deserialise_object(e) for e in data.pop("_elements")]
         result = cls(**data)
         result.elements = elements
         return result
 
 
-@deserialise.register_deserialiser(get_object_provenance(grouped))
+@register_deserialiser(get_object_provenance(grouped))
 def deserialise_grouped(data):
     return grouped.from_dict(data)
 
@@ -114,7 +116,7 @@ def make_identifier(data) -> str:
     -------
     e1--e2... (double hyphen between names without suffix)
     """
-    from cogent3.app.data_store import get_data_source
+    from scinexus.data_store import get_data_source
 
     sources = [get_data_source(e) for e in data]
     if "unknown" in sources:

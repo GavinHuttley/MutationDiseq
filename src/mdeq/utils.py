@@ -10,11 +10,12 @@ from pathlib import Path
 import numpy
 from cogent3 import get_app, make_table, open_data_store
 from cogent3.app import io as io_app
-from cogent3.app.composable import NotCompleted, define_app, get_unique_id
 from cogent3.app.typing import AlignedSeqsType, SerialisableType
-from cogent3.util import deserialise
 from cogent3.util.dict_array import DictArray
-from cogent3.util.misc import get_object_provenance
+from scinexus.composable import NotCompleted, define_app
+from scinexus.data_store import get_unique_id
+from scinexus.deserialise import deserialise_object
+from scinexus.misc import get_object_provenance
 from scipy.interpolate import UnivariateSpline
 
 try:
@@ -175,7 +176,7 @@ class CompressedValue:
 
     @property
     def deserialised(self):
-        r = deserialise.deserialise_object(self.as_primitive)
+        r = deserialise_object(self.as_primitive)
         return r
 
 
@@ -304,7 +305,7 @@ serialiser = io_app.to_primitive() + io_app.pickle_it() + io_app.compress()
 
 
 def write_to_sqldb(data_store, id_from_source=None):
-    from cogent3.app.io import get_unique_id
+    from scinexus.data_store import get_unique_id
 
     id_from_source = id_from_source or get_unique_id
 
